@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculate SIP Return With Inflation</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #1848ca;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        h2 {
+            text-align: center;
+            color: #007bff;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            font-weight: bold;
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        input[type="text"] {
+            width: calc(100% - 12px);
+            padding: 10px;
+            border-radius: 5px;
+            border: 1px solid #ced4da;
+            box-sizing: border-box;
+            font-size: 16px;
+            margin-bottom: 10px;
+        }
+
+        .submitBtnDiv {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .submitBtn {
+            padding: 10px 20px;
+            font-size: 16px;
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-right: 10px;
+        }
+
+        .submitBtn:hover {
+            background-color: #0056b3;
+        }
+
+        .result {
+            text-align: center;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>Calculate SIP Return With Inflation</h2>
+    <div class="jumbotron">
+        <span><strong>Calculate SIP Return With Inflation</strong></span>
+        <br><br>
+        <form>
+            <div class="form-group row">
+                <div class="col-sm-6"><label>Enter Time Period (Years)</label></div>
+                <div class="col-sm-6">
+                    <input type="text" id="simpleSIPInflationTime" class="form-control" value="0">
+                </div>
+            </div>
+            <div class="form-group row">
+                <div class="col-sm-6"><label>Enter SIP Amount (₹)</label></div>
+                <div class="col-sm-6">
+                    <input type="text" id="simpleSIPInflationAmount" class="form-control" value="0">
+                </div>
+            </div>
+            <div class="form-group row">
+                <div class="col-sm-6"><label>Enter Expected Rate Of Return (%)</label></div>
+                <div class="col-sm-6">
+                    <input type="text" id="simpleSIPInflationRate" class="form-control" value="0%">
+                </div>
+            </div>
+            <div class="form-group row">
+                <div class="col-sm-6"><label>Expected Inflation (%)</label></div>
+                <div class="col-sm-6">
+                    <input type="text" id="simpleSIPInflate" class="form-control" value="0%">
+                </div>
+            </div>
+            <div class="submitBtnDiv"><br>
+                <button type="button" id="simpleSIPInflationBtn" class="submitBtn">Submit</button>
+            </div>
+        </form>
+    </div>
+    <div id="resultSection" class="result"></div>
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+        const resultSection = document.getElementById("resultSection");
+
+        document.getElementById("simpleSIPInflationBtn").addEventListener("click", function () {
+            const time = parseFloat(document.getElementById("simpleSIPInflationTime").value);
+            const sipAmount = parseFloat(document.getElementById("simpleSIPInflationAmount").value);
+            const rate = parseFloat(document.getElementById("simpleSIPInflationRate").value);
+            const inflation = parseFloat(document.getElementById("simpleSIPInflate").value);
+
+            const realRate = (1 + rate / 100) / (1 + inflation / 100) - 1;
+            const futureValueSIP = sipAmount * (((Math.pow(1 + realRate, time) - 1) / realRate) + 1);
+            const totalFutureValue = futureValueSIP;
+
+            resultSection.innerHTML = "<br><strong>Total Future Value of Investment: ₹" + totalFutureValue.toFixed(2) + "</strong>";
+        });
+    });
+</script>
+
+</body>
+</html>

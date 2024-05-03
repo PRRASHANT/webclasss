@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SIP Calculator</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #091113;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        h2 {
+            text-align: center;
+            color: #007bff;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            font-weight: bold;
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        input[type="text"] {
+            width: calc(100% - 12px);
+            padding: 10px;
+            border-radius: 5px;
+            border: 1px solid #ced4da;
+            box-sizing: border-box;
+            font-size: 16px;
+            margin-bottom: 10px;
+        }
+
+        .submitBtnDiv {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .submitBtn, .resetBtn {
+            padding: 10px 20px;
+            font-size: 16px;
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-right: 10px;
+        }
+
+        .submitBtn:hover, .resetBtn:hover {
+            background-color: #0056b3;
+        }
+
+        .result {
+            text-align: center;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>SIP Calculator</h2>
+    <div class="jumbotron">
+        <span><strong>I would like to invest in SIP</strong></span>
+        <br><br>
+        <form id="sipForm">
+            <div class="form-group">
+                <label for="simpleSIPTime">For Time Period (Years)</label>
+                <input type="text" id="simpleSIPTime" class="form-control" value="0">
+            </div>
+            <div class="form-group">
+                <label for="simpleSIPAmount">For Amount (₹)</label>
+                <input type="text" id="simpleSIPAmount" class="form-control" value="0">
+            </div>
+            <div class="form-group">
+                <label for="simpleSIPRate">At Expected Rate Of Return (%)</label>
+                <input type="text" id="simpleSIPRate" class="form-control" value="0%">
+            </div>
+            <div class="submitBtnDiv">
+                <button type="button" id="simpleSIPBtn" class="submitBtn">Calculate</button>
+                <button type="button" id="resetBtn" class="resetBtn">Reset</button>
+            </div>
+        </form>
+    </div>
+    <div id="resultSection" class="result"></div>
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+        const resultSection = document.getElementById("resultSection");
+        const sipForm = document.getElementById("sipForm");
+        const resetBtn = document.getElementById("resetBtn");
+
+        sipForm.addEventListener("submit", function (event) {
+            event.preventDefault();
+        });
+
+        document.getElementById("simpleSIPBtn").addEventListener("click", function () {
+            const time = parseFloat(document.getElementById("simpleSIPTime").value);
+            const amount = parseFloat(document.getElementById("simpleSIPAmount").value);
+            const rate = parseFloat(document.getElementById("simpleSIPRate").value);
+
+            const futureValue = amount * ((Math.pow(1 + rate / 100, time) - 1) / (rate / 100));
+
+            resultSection.innerHTML = "<br><strong>Future Value of SIP: ₹" + futureValue.toFixed(2) + "</strong>";
+        });
+
+        resetBtn.addEventListener("click", function () {
+            resultSection.innerHTML = "";
+            sipForm.reset();
+        });
+    });
+</script>
+
+</body>
+</html>

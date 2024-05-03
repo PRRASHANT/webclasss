@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SIP Calculator with Annual Increment</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #11ced4;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        h2 {
+            text-align: center;
+            color: #007bff;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            font-weight: bold;
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        input[type="text"] {
+            width: calc(100% - 12px);
+            padding: 10px;
+            border-radius: 5px;
+            border: 1px solid #ced4da;
+            box-sizing: border-box;
+            font-size: 16px;
+            margin-bottom: 10px;
+        }
+
+        .submitBtnDiv {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .submitBtn, .resetBtn {
+            padding: 10px 20px;
+            font-size: 16px;
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-right: 10px;
+        }
+
+        .submitBtn:hover, .resetBtn:hover {
+            background-color: #0056b3;
+        }
+
+        .result {
+            text-align: center;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>SIP Calculator with Annual Increment</h2>
+    <div class="jumbotron">
+        <span><strong>Investing In SIP With Annual Increment (Amount)</strong></span>
+        <br><br>
+        <form id="sipStepUpForm">
+            <div class="form-group">
+                <label for="SIPStepUpTime">For Time Period (Years)</label>
+                <input type="text" id="SIPStepUpTime" class="form-control" value="0">
+            </div>
+            <div class="form-group">
+                <label for="SIPStepUpAmount">For Amount (₹)</label>
+                <input type="text" id="SIPStepUpAmount" class="form-control" value="0">
+            </div>
+            <div class="form-group">
+                <label for="SIPStepUpRate">At Expected Rate Of Return (%)</label>
+                <input type="text" id="SIPStepUpRate" class="form-control" value="0%">
+            </div>
+            <div class="form-group">
+                <label for="SIPStepUp">For Annual Increment (₹)</label>
+                <input type="text" id="SIPStepUp" class="form-control" value="0">
+            </div>
+            <div class="submitBtnDiv">
+                <button type="button" id="SIPStepUpBtn" class="submitBtn">Submit</button>
+            </div>
+        </form>
+    </div>
+    <div id="resultSection" class="result"></div>
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+        const resultSection = document.getElementById("resultSection");
+        const sipStepUpForm = document.getElementById("sipStepUpForm");
+
+        sipStepUpForm.addEventListener("submit", function (event) {
+            event.preventDefault();
+        });
+
+        document.getElementById("SIPStepUpBtn").addEventListener("click", function () {
+            const time = parseFloat(document.getElementById("SIPStepUpTime").value);
+            const initialAmount = parseFloat(document.getElementById("SIPStepUpAmount").value);
+            const rate = parseFloat(document.getElementById("SIPStepUpRate").value);
+            const annualIncrement = parseFloat(document.getElementById("SIPStepUp").value);
+
+            let totalAmount = initialAmount;
+            let futureValue = 0;
+
+            for (let i = 0; i < time; i++) {
+                futureValue += totalAmount * (1 + rate / 100);
+                totalAmount += annualIncrement;
+            }
+
+            resultSection.innerHTML = "<br><strong>Future Value of SIP with Annual Increment: ₹" + futureValue.toFixed(2) + "</strong>";
+        });
+    });
+</script>
+
+</body>
+</html>
