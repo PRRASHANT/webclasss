@@ -13,7 +13,7 @@
         }
 
         .container {
-            max-width: 600px;
+            max-width: 800px;
             margin: 20px auto;
             padding: 20px;
             background-color: #fff;
@@ -70,6 +70,17 @@
             text-align: center;
             margin-top: 20px;
         }
+
+        
+        #graph {
+            margin-top: 30px;
+        }
+
+        .line {
+            fill: none;
+            stroke: #ff7f0e;
+            stroke-width: 2px;
+        }
     </style>
 </head>
 <body>
@@ -110,8 +121,11 @@
         </form>
     </div>
     <div id="resultSection" class="result"></div>
+    <!-- SVG element for the graph -->
+    <svg id="graph" width="600" height="400"></svg>
 </div>
 
+<script src="https://d3js.org/d3.v7.min.js"></script>
 <script>
     document.addEventListener("DOMContentLoaded", () => {
         const resultSection = document.getElementById("resultSection");
@@ -127,9 +141,57 @@
             const totalFutureValue = futureValueSIP;
 
             resultSection.innerHTML = "<br><strong>Total Future Value of Investment: ₹" + totalFutureValue.toFixed(2) + "</strong>";
+
+            // Remove previous graph if exists
+            d3.select("#graph").selectAll("*").remove();
+
+            // D3.js code to create a histogram
+            const numBins = 10; // Number of bins for histogram
+
+            // Generate data for histogram
+            const data = d3.range(numBins).map(() => {
+                return {
+                    value: sipAmount + Math.random() * (totalFutureValue - sipAmount) // Random values within the range
+                };
+            });
+
+            const margin = {top: 20, right: 20, bottom: 30, left: 40};
+            const width = 600 - margin.left - margin.right;
+            const height = 400 - margin.top - margin.bottom;
+
+            const x = d3.scaleLinear()
+                .domain([sipAmount, totalFutureValue])
+                .range([0, width]);
+
+            const histogram = d3.histogram()
+                .value(d => d.value)
+                .domain(x.domain())
+                .thresholds(x.ticks(numBins));
+
+            const bins = histogram(data);
+
+            const y = d3.scaleLinear()
+                .domain([0, d3.max(bins, d => d.length)])
+                .range([height, 0]);
+
+            const svg = d3.select("#graph")
+                .attr("width", width + margin.left + margin.right)
+                .attr("height", height + margin.top + margin.bottom)
+                .append("g")
+                .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+            svg.selectAll(".bar")
+                .data(bins)
+                .enter().append("rect")
+                .attr("class", "bar")
+                .attr("x", 1)
+                .attr("transform", d => "translate(" + x(d.x0) + "," + y(d.length) + ")")
+                .attr("width", d => Math.max(0, x(d.x1) - x(d.x0) - 1))
+                .attr("height", d => height - y(d.length));
         });
     });
-</script>
+  </script>
+ </script>
 
-</body>
-</html>
+   </body>
+  </html>

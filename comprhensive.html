@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Comprehensive Retirement Planning Calculator</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #074154;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        h2 {
+            text-align: center;
+            color: #007bff;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            font-weight: bold;
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        input[type="text"] {
+            width: calc(100% - 12px);
+            padding: 10px;
+            border-radius: 5px;
+            border: 1px solid #ced4da;
+            box-sizing: border-box;
+            font-size: 16px;
+            margin-bottom: 10px;
+        }
+
+        .submitBtnDiv {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .submitBtn {
+            padding: 10px 20px;
+            font-size: 16px;
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-right: 10px;
+        }
+
+        .submitBtn:hover {
+            background-color: #0056b3;
+        }
+
+        .result {
+            text-align: center;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>Comprehensive Retirement Planning Calculator</h2>
+    <div class="jumbotron reqSIPForm">
+        <span><strong>Comprehensive Retirement Planning Calculator</strong></span>
+        <p class="descRetirePortfolio">Calculate Your Required SIP Amount For Retirement Planning. You Can Calculate Monthly SWP With & Without Inflation. You Can Also Plan Gift Amount For Your Children. Life Expectancy Is Considered As 90 Yrs. </p>
+        <br><br>
+        <form>
+            <div class="form-group row">
+                <div class="col-sm-6"><label>Current Age (Years)</label></div>
+                <div class="col-sm-6">
+                    <input type="text" id="reqdSIPCurrentAge" class="form-control" value="0">
+                </div>
+            </div>
+            <div class="form-group row">
+                <div class="col-sm-6"><label>Retirement Age (Years)</label></div>
+                <div class="col-sm-6">
+                    <input type="text" id="reqdSIPRetirementtAge" class="form-control" value="0">
+                </div>
+            </div>
+            <div class="form-group row">
+                <div class="col-sm-6"><label>Current Monthly Expense (₹)</label></div>
+                <div class="col-sm-6">
+                    <input type="text" id="reqdSIPmonthlyExpense" class="form-control" value="0">
+                </div>
+            </div>
+            <div class="form-group row">
+                <div class="col-sm-6"><label>Amount Left For Children At 90th Yr (₹)</label></div>
+                <div class="col-sm-6">
+                    <input type="text" id="reqdSIPResidualAmt" class="form-control" value="0">
+                </div>
+            </div>
+            <div class="form-group row">
+                <div class="col-sm-6"><label>Avg Return Pre Retirement (%)</label></div>
+                <div class="col-sm-6">
+                    <input type="text" id="reqdSIPCurrentRate" class="form-control" value="0%">
+                </div>
+            </div>
+            <div class="form-group row">
+                <div class="col-sm-6"><label>Avg Return Post Retirement (%)</label></div>
+                <div class="col-sm-6">
+                    <input type="text" id="reqdSIPAssumedFutureReturn" class="form-control" value="0%">
+                </div>
+            </div>
+            <div class="form-group row">
+                <div class="col-sm-6"><label>Avg Inflation Pre Retirement (%)</label></div>
+                <div class="col-sm-6">
+                    <input type="text" id="reqdSIPCurrentInflation" class="form-control" value="0%">
+                </div>
+            </div>
+            <div class="form-group row">
+                <div class="col-sm-6"><label>Avg Inflation Post Retirement(%)</label></div>
+                <div class="col-sm-6">
+                    <input type="text" id="reqdSIPAssumedFutureInflation" class="form-control" value="0%">
+                </div>
+            </div>
+            <div class="submitBtnDiv"><br>
+                <button type="button" id="reqdSIPSubmit" class="btn btn-primary submitBtn">Submit</button>
+            </div>
+        </form>
+    </div>
+    <div id="resultSection" class="result"></div>
+    <div id="pieChart" class="result"></div>
+</div>
+
+<script src="https://d3js.org/d3.v7.min.js"></script>
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+        const resultSection = document.getElementById("resultSection");
+
+        document.getElementById("reqdSIPSubmit").addEventListener("click", () => {
+            // Retrieve input values
+            const currentAge = parseFloat(document.getElementById("reqdSIPCurrentAge").value);
+            const retirementAge = parseFloat(document.getElementById("reqdSIPRetirementtAge").value);
+            const monthlyExpense = parseFloat(document.getElementById("reqdSIPmonthlyExpense").value);
+            const residualAmt = parseFloat(document.getElementById("reqdSIPResidualAmt").value);
+            const currentRate = parseFloat(document.getElementById("reqdSIPCurrentRate").value) / 100;
+            const futureRate = parseFloat(document.getElementById("reqdSIPAssumedFutureReturn").value) / 100;
+            const currentInflation = parseFloat(document.getElementById("reqdSIPCurrentInflation").value) / 100;
+            const futureInflation = parseFloat(document.getElementById("reqdSIPAssumedFutureInflation").value) / 100;
+
+            // Perform calculations
+            const yearsToRetirement = retirementAge - currentAge;
+            const futureYears = 90 - retirementAge;
+            const requiredCapital = (monthlyExpense * 12) * ((1 - Math.pow(1 + futureInflation, futureYears)) / (futureInflation - futureRate));
+
+            // Display result
+            const requiredSIP = requiredCapital / ((1 - Math.pow(1 + currentRate, yearsToRetirement)) / currentRate);
+            const monthlySWP = requiredCapital / ((Math.pow(1 + futureRate, futureYears) - 1) / futureRate);
+            const resultHTML = `
+                <br><strong>Required SIP Amount At Age ${currentAge}: ₹${requiredSIP.toFixed(2)}</strong><br>
+                <strong>Monthly SWP Amount From Age ${retirementAge}: ₹${monthlySWP.toFixed(2)}</strong><br>
+                <strong>Required Capital At Age ${retirementAge} To Meet Retirement Needs: ₹${requiredCapital.toFixed(2)}</strong><br>
+            `;
+            resultSection.innerHTML = resultHTML;
+
+            // Generate Pie Chart
+            const data = [monthlyExpense, residualAmt];
+            const colors = ['#007bff', '#28a745'];
+
+            const width = 300;
+            const height = 300;
+            const radius = Math.min(width, height) / 2;
+
+            const svg = d3.select("#pieChart")
+                .append("svg")
+                .attr("width", width)
+                .attr("height", height)
+                .append("g")
+                .attr("transform", `translate(${width / 2},${height / 2})`);
+
+            const pie = d3.pie();
+            const arc = d3.arc().innerRadius(0).outerRadius(radius);
+
+            const arcs = svg.selectAll("arc")
+                .data(pie(data))
+                .enter()
+                .append("g")
+                .attr("class", "arc");
+
+            arcs.append("path")
+                .attr("fill", (d, i) => colors[i])
+                .attr("d", arc);
+
+            arcs.append("text")
+                .attr("transform", d => `translate(${arc.centroid(d)})`)
+                .attr("text-anchor", "middle")
+                .text(d => `₹${d.data.toFixed(2)}`);
+        });
+    });
+</script>
+
+</body>
+</html>

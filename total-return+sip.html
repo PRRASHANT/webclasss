@@ -13,7 +13,7 @@
         }
 
         .container {
-            max-width: 600px;
+            max-width: 800px;
             margin: 20px auto;
             padding: 20px;
             background-color: #fff;
@@ -70,6 +70,12 @@
             text-align: center;
             margin-top: 20px;
         }
+
+        /* D3.js graph styles */
+        #graphContainer {
+            margin-top: 40px;
+            text-align: center;
+        }
     </style>
 </head>
 <body>
@@ -102,7 +108,12 @@
         </form>
     </div>
     <div id="resultSection" class="result"></div>
+
+    <!-- D3.js graph container -->
+    <div id="graphContainer"></div>
 </div>
+
+<script src="https://d3js.org/d3.v7.min.js"></script>
 
 <script>
     document.addEventListener("DOMContentLoaded", () => {
@@ -124,6 +135,41 @@
             const totalFutureValue = futureValueSIP + futureValueLumpSum;
 
             resultSection.innerHTML = "<br><strong>Total Future Value of Investment: ₹" + totalFutureValue.toFixed(2) + "</strong>";
+
+            // D3.js graph code
+            const dataset = [1, 2, 3, 4, 5]; // Example dataset
+
+            const svgWidth = 600;
+            const svgHeight = 400;
+            const margin = { top: 20, right: 20, bottom: 30, left: 50 };
+            const width = svgWidth - margin.left - margin.right;
+            const height = svgHeight - margin.top - margin.bottom;
+
+            const svg = d3.select("#graphContainer")
+                .append("svg")
+                .attr("width", svgWidth)
+                .attr("height", svgHeight)
+                .append("g")
+                .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+            const x = d3.scaleLinear()
+                .domain([0, dataset.length - 1])
+                .range([0, width]);
+
+            const y = d3.scaleLinear()
+                .domain([0, d3.max(dataset)])
+                .range([height, 0]);
+
+            const line = d3.line()
+                .x((d, i) => x(i))
+                .y(d => y(d));
+
+            svg.append("path")
+                .datum(dataset)
+                .attr("fill", "none")
+                .attr("stroke", "steelblue")
+                .attr("stroke-width", 1.5)
+                .attr("d", line);
         });
     });
 </script>

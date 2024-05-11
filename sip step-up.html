@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -13,7 +14,7 @@
         }
 
         .container {
-            max-width: 600px;
+            max-width: 800px;
             margin: 20px auto;
             padding: 20px;
             background-color: #fff;
@@ -70,6 +71,29 @@
             text-align: center;
             margin-top: 20px;
         }
+
+        svg {
+            margin-top: 20px;
+        }
+
+        .bar {
+            fill: steelblue;
+        }
+
+        .bar:hover {
+            fill: #0056b3;
+        }
+
+        .axis {
+            font-size: 14px;
+        }
+
+        .axis path,
+        .axis line {
+            fill: none;
+            stroke: #000;
+            shape-rendering: crispEdges;
+        }
     </style>
 </head>
 <body>
@@ -102,12 +126,15 @@
         </form>
     </div>
     <div id="resultSection" class="result"></div>
+    <svg width="800" height="400" id="graph"></svg>
 </div>
 
+<script src="https://d3js.org/d3.v7.min.js"></script>
 <script>
     document.addEventListener("DOMContentLoaded", () => {
         const resultSection = document.getElementById("resultSection");
         const sipStepUpForm = document.getElementById("sipStepUpForm");
+        const svg = d3.select("#graph");
 
         sipStepUpForm.addEventListener("submit", function (event) {
             event.preventDefault();
@@ -122,15 +149,58 @@
             let totalAmount = initialAmount;
             let futureValue = 0;
 
+            const data = [];
+
             for (let i = 0; i < time; i++) {
                 futureValue += totalAmount * (1 + rate / 100);
                 totalAmount += annualIncrement;
+                data.push({year: i + 1, value: futureValue});
             }
 
-            resultSection.innerHTML = "<br><strong>Future Value of SIP with Annual Increment: ₹" + futureValue.toFixed(2) + "</strong>";
+            // Clear previous graph
+            svg.selectAll("*").remove();
+
+            // Define margins and dimensions
+            const margin = { top: 30, right: 30, bottom: 70, left: 60 };
+            const width = 800 - margin.left - margin.right;
+            const height = 400 - margin.top - margin.bottom;
+
+            // Define scales
+            const xScale = d3.scaleBand()
+                .domain(data.map(d => d.year))
+                .range([0, width])
+                .padding(0.1);
+
+            const yScale = d3.scaleLinear()
+                .domain([0, d3.max(data, d => d.value)])
+                .nice()
+                .range([height, 0]);
+
+            // Create SVG element
+            const g = svg.append("g")
+                .attr("transform", `translate(${margin.left},${margin.top})`);
+
+            // Draw bars
+            g.selectAll("rect")
+                .data(data)
+                .enter().append("rect")
+                .attr("class", "bar")
+                .attr("x", d => xScale(d.year))
+                .attr("y", d => yScale(d.value))
+                .attr("width", xScale.bandwidth())
+                .attr("height", d => height - yScale(d.value));
+
+            // Draw x-axis
+            g.append("g")
+                .attr("class", "axis")
+                .attr("transform", `translate(0,${height})`)
+                .call(d3.axisBottom(xScale));
+
+            // Draw y-axis
+            g.append("g")
+                .attr("class", "axis")
+                .call(d3.axisLeft(yScale));
         });
     });
 </script>
 
-</body>
-</html>
